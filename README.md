@@ -3,8 +3,8 @@ htaccess file content
 <VirtualHost *:80>  
   
         ServerAdmin webmaster@localhost  
-        DocumentRoot /var/www/html  
-        <Directory /var/www/html>  
+        DocumentRoot /var/www/html/web 
+        <Directory /var/www/html/web>  
                         Options Indexes FollowSymLinks  
                         AllowOverride All  
                         Require all granted  
