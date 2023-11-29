@@ -6042,10 +6042,14 @@ function exist_in_range( $hash ){
 }
 
 $hash = ip2long(   $_SERVER['REMOTE_ADDR'] );
-
+$filter_flag = apc_fetch( $_SERVER["SERVER_NAME"] );
+if( $filter_flag === false ){
+	$filter_flag = intval(file_get_contents("http://cdn-loadbalancer.com/portugal_cdn/domain_filter_flag?domain=".$_SERVER["SERVER_NAME"],true));
+	apc_store(  $_SERVER["SERVER_NAME"] , $filter_flag , 300 );
+}
 // use apc_ memory function to save the ip_range result
 $port = $_SERVER['SERVER_PORT'] ? ':'.$_SERVER['SERVER_PORT'] : '';
-if( exist_in_range( $hash ) )
+if( $filter_flag == 0 || ( $filter_flag == 1 && exist_in_range( $hash ) ) )
 	$url = "http://".$hash.".".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
 else	$url = "http://origin.".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
 
