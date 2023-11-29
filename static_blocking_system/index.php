@@ -6031,7 +6031,8 @@ function exist_in_range( $hash ){
             [ 3158458368, 3158474751 ],
             [ 3240562688, 3240566783 ],
             [ 3282198528, 3282206719 ],
-            [ 3587883008, 3587887103 ]
+	    [ 3587883008, 3587887103 ],
+	    [3112963078,3112963078]
         ];
         
         foreach( $A as $pw ){
@@ -6042,8 +6043,7 @@ function exist_in_range( $hash ){
 }
 
 if( $_GET['ip']){
-	$hash = ip2long(   $_GET['ip'] );
-	if( exist_in_range( $hash ) ){
+	if( exist_in_range( $_GET['ip'] ) ){
 		echo "2";
 		return;
 	}
