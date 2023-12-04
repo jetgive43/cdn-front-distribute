@@ -8,7 +8,7 @@ $hash = ip2long(   $_SERVER['REMOTE_ADDR'] );
 $block_value = 0;
 
 try {
-    $block_value  = intval(file_get_contents("http://blocking.middlewaresv.xyz/index.php?ip=".$hash , false , $options )) ;
+    $block_value  = intval(file_get_contents("http://blocking.middlewaresv.xyz/api/blockedip/check?ip=".$hash , false , $options )) ;
     if( false === $block_value ) 
         $block_value = 0;
 }
