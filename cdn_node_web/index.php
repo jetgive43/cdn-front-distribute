@@ -4,7 +4,7 @@ $options = stream_context_create(array('http'=>
     'timeout' => 1 // 1 seconds
     )
 ));
-
+$hash = ip2long(   $_SERVER['REMOTE_ADDR'] );
 $block_value = 0;
 
 try {
@@ -16,7 +16,7 @@ catch(Exception $e) {
     $block_value = 0;
 }
 
-$hash = ip2long(   $_SERVER['REMOTE_ADDR'] );
+
 $port = $_SERVER['SERVER_PORT'] ? ':'.$_SERVER['SERVER_PORT'] : '';
 
 if( $block_value == 2 ) // whitelist
