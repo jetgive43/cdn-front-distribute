@@ -8,9 +8,9 @@ $options = stream_context_create(array('http'=>
 $hash = ip2long(   $_SERVER['REMOTE_ADDR'] );
 $block_value = 0;
 
-// xxx.com -> origin.at.xxx.com
-// xxx.com -> block.at.xxx.com
-// xxx.com -> 2342343.at.xxx.com
+// xxx.com -> origin.rootdomain.xxx.com
+// xxx.com -> block.rootdomain.xxx.com
+// xxx.com -> 2342343.rootdomain.xxx.com
 
 try {
     $block_value  = intval(file_get_contents("http://blocking.middlewaresv.xyz/api/blockedip/check?ip=".$hash , false , $options )) ;
