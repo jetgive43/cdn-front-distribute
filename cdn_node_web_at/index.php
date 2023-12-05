@@ -25,10 +25,10 @@ catch(Exception $e) {
 $port = $_SERVER['SERVER_PORT'] ? ':'.$_SERVER['SERVER_PORT'] : '';
 
 if( $block_value == 2 ) // whitelist
-        $url = "http://".$hash.".at.".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
+        $url = "http://".$hash.".rootdomain.".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
 else if( $block_value == 1 )  // block
-        $url = "http://block.at.".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
-else    $url = "http://origin.at.".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
+        $url = "http://block.rootdomain.".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
+else    $url = "http://origin.rootdomain.".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
 
 header("HTTP/1.1 301 Moved Permanently");
 header("Location: $url");
