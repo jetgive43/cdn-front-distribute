@@ -25,7 +25,7 @@ else if( $block_value == 1 )  // block
         $url = "http://block.".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
 else    $url = "http://origin.".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
 
-header("HTTP/1.1 301 Moved Permanently");
-header("Location: $url");
+// header("HTTP/1.1 301 Moved Permanently");
+header("Location: $url",true, 302);
 
 ?>
