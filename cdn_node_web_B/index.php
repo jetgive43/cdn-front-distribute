@@ -19,9 +19,7 @@ catch(Exception $e) {
 
 $port = $_SERVER['SERVER_PORT'] ? ':'.$_SERVER['SERVER_PORT'] : '';
 
-if( $block_value == 2 ) // whitelist
-        $url = "http://front-".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
-else if( $block_value == 1 )  // block
+if( $block_value == 1 )  // block
         $url = "http://block-".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
 else    $url = "http://origi-".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
 
