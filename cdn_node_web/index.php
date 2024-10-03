@@ -35,7 +35,11 @@ function fetchAndCacheBlockData() {
 }
 
 // Check if block data is cached
-$block_data = apcu_fetch('block_data');
+try {
+ $block_data = apcu_fetch('block_data');
+} catch (Exception $e) {
+    fetchAndCacheBlockData();
+}
 
 try {
     if ($block_data === false) {
