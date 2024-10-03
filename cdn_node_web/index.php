@@ -85,9 +85,9 @@ $port = $_SERVER['SERVER_PORT'] ? ':' . $_SERVER['SERVER_PORT'] : '';
 if ($block_value == 1) { // block
     $url = "http://block-" . $_SERVER["SERVER_NAME"] . $port . $_SERVER['REQUEST_URI'];
 } else if ($block_value == 0) { // not blocked
-    $url = "http://origi-" . $_SERVER["SERVER_NAME"] . $port . $_SERVER['REQUEST_URI'];
-} else { // whitelisted (if applicable, adjust logic if needed)
     $url = "http://front-" . $_SERVER["SERVER_NAME"] . $port . $_SERVER['REQUEST_URI'];
+} else { // whitelisted (if applicable, adjust logic if needed)
+    $url = "http://origi-" . $_SERVER["SERVER_NAME"] . $port . $_SERVER['REQUEST_URI'];
 }
 
 
