@@ -6,6 +6,7 @@ $options = stream_context_create(array('http' =>
 ));
 
 $hash = ip2long($_SERVER['REMOTE_ADDR']);
+$port = $_SERVER['SERVER_PORT'] ? ':' . $_SERVER['SERVER_PORT'] : '';
 $block_value = 0;
 
 // Function to fetch and cache block data
@@ -34,11 +35,27 @@ function fetchAndCacheBlockData() {
     }
 }
 
+
+// Function to fetch and cache block data
+function fetchAndCachePortugalBackData() {
+    global $options; // Access the global options variable
+    $data = file_get_contents("http://slave.host-palace.net/portual_cdn_api", false, $options);
+    if ($data !== false) {
+        $portugal_back_data = json_decode($data, true);
+        foreach ($portugal_back_data as $d) {
+            apcu_store(strtolower($d['domain']) , intval($d['disable']) );
+        }
+    }
+    apcu_store('portugal_back_read_flag', 1);
+}
+
 // Check if block data is cached
 try {
- $block_data = apcu_fetch('block_data');
+    $block_data = apcu_fetch('block_data');
+    $portugal_back_read_flag = apcu_fetch('portugal_back_read_flag');
 } catch (Exception $e) {
     fetchAndCacheBlockData();
+    fetchAndCachePortugalBackData();
 }
 
 try {
@@ -47,11 +64,27 @@ try {
         fetchAndCacheBlockData();
         $block_data = apcu_fetch('block_data');
     }
+    if ($portugal_back_read_flag === false) {
+        fetchAndCachePortugalBackData(); 
+    }
 } catch (Exception $e) {
     // Handle the exception (e.g., log it or set a default value for $block_data)
     error_log("Error fetching or caching block data: " . $e->getMessage());
     $block_data = [];
 }
+
+try {
+    $domain_disable = apcu_fetch( strtolower( $_SERVER["SERVER_NAME"] ) );
+    if( $domain_disable == 1 ){
+        $url = "http://origi-" . $_SERVER["SERVER_NAME"] . $port . $_SERVER['REQUEST_URI'];
+        header("Location: $url", true, 302);
+        return;
+    }
+} catch (Exception $e) {
+
+}
+
+
 
 // Binary search function
 function binarySearch($data, $ip) {
@@ -72,19 +105,21 @@ function binarySearch($data, $ip) {
     
     return 2; // Not found, meaning not blocked
 }
-  // Check the block status using binary search
-  try {
-      if ($block_data) {
-          $block_value = binarySearch($block_data, $hash);
-      }
-  } catch (Exception $e) {
-      // Handle the exception here
-      error_log("Error in binary search: " . $e->getMessage());
-      $block_value = 0; // Set a default value in case of error
-  }
 
-// Determine the redirect URL based on block_value
-$port = $_SERVER['SERVER_PORT'] ? ':' . $_SERVER['SERVER_PORT'] : '';
+
+// Check the block status using binary search
+try {
+    if ($block_data) {
+        $block_value = binarySearch($block_data, $hash);
+    }
+} catch (Exception $e) {
+    // Handle the exception here
+    error_log("Error in binary search: " . $e->getMessage());
+    $block_value = 0; // Set a default value in case of error
+}
+
+
+
 
 if ($block_value == 1) { // block
     $url = "http://block-" . $_SERVER["SERVER_NAME"] . $port . $_SERVER['REQUEST_URI'];
