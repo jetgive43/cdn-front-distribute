@@ -49,11 +49,10 @@ else {
      
   // Check if block data is cached
   try {
-      $block_data = apcu_fetch('block_data');
-      $portugal_back_read_flag = apcu_fetch('portugal_back_read_flag');
-  } catch (Exception $e) {
       fetchAndCacheBlockData();
       fetchAndCachePortugalBackData();
+  } catch (Exception $e) {
+      
   }
 
    echo "memory cleared";
