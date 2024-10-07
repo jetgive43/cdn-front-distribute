@@ -124,7 +124,7 @@ if( $block_value == 1 ) { // block
 } else if( $block_value == 0 ) {// whitelist
         $url = "https://front-".$_SERVER["SERVER_NAME"].$_SERVER['REQUEST_URI'];
 } else {   
-    $url = "http://origi-".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
+    $url = "https://origi-".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
 }
 
 // Redirect to the appropriate URL
