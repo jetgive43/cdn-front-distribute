@@ -125,7 +125,7 @@ if ($block_value == 1) { // block
     $url = "http://block-" . $_SERVER["SERVER_NAME"] . $port . $_SERVER['REQUEST_URI'];
 } else if ($block_value == 0) { // not blocked
     $url = "http://front-" . $_SERVER["SERVER_NAME"] . $port . $_SERVER['REQUEST_URI'];
-} else { // whitelisted (if applicable, adjust logic if needed)
+} else {
     $url = "http://origi-" . $_SERVER["SERVER_NAME"] . $port . $_SERVER['REQUEST_URI'];
 }
 
