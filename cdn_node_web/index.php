@@ -74,9 +74,12 @@ try {
 }
 
 try {
-    $domain_disable = apcu_fetch( strtolower( $_SERVER["SERVER_NAME"] ) );
+    // Server_name  *.xxx.com
+    // HTTP_HOST  user_ruquested.xxx.com
+    
+    $domain_disable = apcu_fetch( strtolower( $_SERVER["SERVER_NAME"] ) );  
     if( $domain_disable == 1 ){
-        $url = "http://origi-" . $_SERVER["SERVER_NAME"] . $port . $_SERVER['REQUEST_URI'];
+        $url = "http://origi-" . $_SERVER["HTTP_HOST"] . $port . $_SERVER['REQUEST_URI']; 
         header("Location: $url", true, 302);
         return;
     }
