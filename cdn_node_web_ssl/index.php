@@ -120,11 +120,11 @@ try {
 
 
 if( $block_value == 1 ) { // block
-        $url = "https://block-".$_SERVER["SERVER_NAME"].$_SERVER['REQUEST_URI'];
+        $url = "https://block-".$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI'];
 } else if( $block_value == 0 ) {// whitelist
-        $url = "https://front-".$_SERVER["SERVER_NAME"].$_SERVER['REQUEST_URI'];
+        $url = "https://front-".$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI'];
 } else {   
-    $url = "https://origi-".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
+    $url = "https://origi-".$_SERVER["HTTP_HOST"].$port.$_SERVER['REQUEST_URI'];
 }
 
 // Redirect to the appropriate URL
