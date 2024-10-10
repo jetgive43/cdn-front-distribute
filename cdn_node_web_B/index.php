@@ -119,8 +119,8 @@ try {
 }
 
 if( $block_value == 1 )  // block
-        $url = "http://block-".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
-else    $url = "http://origi-".$_SERVER["SERVER_NAME"].$port.$_SERVER['REQUEST_URI'];
+        $url = "http://block-".$_SERVER["HTTP_HOST"].$port.$_SERVER['REQUEST_URI'];
+else    $url = "http://origi-".$_SERVER["HTTP_HOST"].$port.$_SERVER['REQUEST_URI'];
 
 // Redirect to the appropriate URL
 // echo $block_value
