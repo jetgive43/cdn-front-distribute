@@ -6,7 +6,6 @@ $options = stream_context_create(array('http' =>
 ));
 
 $hash = ip2long($_SERVER['REMOTE_ADDR']);
-$port = $_SERVER['SERVER_PORT'] ? ':' . $_SERVER['SERVER_PORT'] : '';
 $block_value = 0;
 
 // Function to fetch and cache block data
@@ -79,7 +78,7 @@ try {
     
     $domain_disable = apcu_fetch( strtolower( $_SERVER["SERVER_NAME"] ) );
     if( $domain_disable == 1 ){
-        $url = "http://origi-" . $_SERVER["HTTP_HOST"] . $port . $_SERVER['REQUEST_URI'];
+        $url = "http://origi-" . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'];
         header("Location: $url", true, 302);
         return;
     }
@@ -127,7 +126,7 @@ if( $block_value == 1 ) { // block
 } else if( $block_value == 0 ) {// whitelist
         $url = "https://front-".$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI'];
 } else {   
-    $url = "https://origi-".$_SERVER["HTTP_HOST"].$port.$_SERVER['REQUEST_URI'];
+    $url = "https://origi-".$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI'];
 }
 
 // Redirect to the appropriate URL
