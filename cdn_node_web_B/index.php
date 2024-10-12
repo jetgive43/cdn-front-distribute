@@ -126,5 +126,6 @@ else    $url = "http://origi-".$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI'];
 
 // Redirect to the appropriate URL
 // echo $block_value
+header('Access-Control-Allow-Origin: *'); 
 header("Location: $url", true, 302);
 ?>
