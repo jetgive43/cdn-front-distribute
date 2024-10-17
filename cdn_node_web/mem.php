@@ -45,7 +45,15 @@ if( isset( $_REQUEST['domain'] ) ){
   $domain = strtolower( $_REQUEST['domain'] );
   echo apcu_fetch($domain);
 }
-else {
+else if( $_REQUEST['memory'] == "domain" ){
+  try {
+      fetchAndCachePortugalBackData();
+  } catch (Exception $e) {
+      
+  }
+  echo "domain reset";
+}
+else{
      
   // Check if block data is cached
   try {
@@ -54,7 +62,6 @@ else {
   } catch (Exception $e) {
       
   }
-
-   echo "memory cleared";
+  echo "memory cleared";
 }
 ?>
