@@ -79,6 +79,7 @@ try {
     $domain_disable = apcu_fetch( strtolower( $_SERVER["SERVER_NAME"] ) );
     if( $domain_disable == 1 ){
         $url = "http://origi-" . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'];
+        header('Access-Control-Allow-Origin: *');
         header("Location: $url", true, 302);
         return;
     }
