@@ -21,7 +21,8 @@ function fetchAndCacheBlockData() {
             $sorted_data[] = [
                 'start' => $block['startip'],
                 'end' => $block['endip'],
-                'isBlocked' => $block['isBlocked']
+                'isBlocked' => $block['isBlocked'],
+                'countryCode' => $block['countryCode']
             ];
         }
         
