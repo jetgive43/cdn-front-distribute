@@ -58,7 +58,6 @@ else{
      
   // Check if block data is cached
   try {
-      apcu_clear_cache();
       fetchAndCacheBlockData();
       fetchAndCachePortugalBackData();
   } catch (Exception $e) {
