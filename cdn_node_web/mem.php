@@ -12,7 +12,8 @@ function fetchAndCacheBlockData() {
             $sorted_data[] = [
                 'start' => $block['startip'],
                 'end' => $block['endip'],
-                'isBlocked' => $block['isBlocked']
+                'isBlocked' => $block['isBlocked'],
+                'countryCode' => $block['countryCode']
             ];
         }
         
@@ -45,7 +46,7 @@ if( isset( $_REQUEST['domain'] ) ){
   $domain = strtolower( $_REQUEST['domain'] );
   echo apcu_fetch($domain);
 }
-else if( $_REQUEST['memory'] == "domain" ){
+else if( isset( $_REQUEST['memory'] ) ){
   try {
       fetchAndCachePortugalBackData();
   } catch (Exception $e) {
