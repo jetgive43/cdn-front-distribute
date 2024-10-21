@@ -14,22 +14,23 @@ function fetchAndCacheBlockData() {
     $data = file_get_contents("http://blocking.middlewaresv.xyz/api/blockedip/all", false, $options);
     if ($data !== false) {
         $block_data = json_decode($data, true);
-        
+
         // Prepare a sorted array for binary search
         $sorted_data = [];
         foreach ($block_data as $block) {
             $sorted_data[] = [
                 'start' => $block['startip'],
                 'end' => $block['endip'],
-                'isBlocked' => $block['isBlocked']
+                'isBlocked' => $block['isBlocked'],
+                'countryCode' => $block['countryCode']
             ];
         }
-        
+
         // Sort by start IP
         usort($sorted_data, function($a, $b) {
             return $a['start'] - $b['start'];
         });
-        
+
         apcu_store('block_data', $sorted_data);
     }
 }
@@ -59,12 +60,12 @@ try {
 
 try {
     if ($block_data === false) {
-        // If not cached, fetch from the API and cache it
+     // If not cached, fetch from the API and cache it
         fetchAndCacheBlockData();
         $block_data = apcu_fetch('block_data');
     }
     if ($portugal_back_read_flag === false) {
-        fetchAndCachePortugalBackData(); 
+        fetchAndCachePortugalBackData();
     }
 } catch (Exception $e) {
     // Handle the exception (e.g., log it or set a default value for $block_data)
@@ -75,50 +76,61 @@ try {
 try {
     // Server_name  *.xxx.com
     // HTTP_HOST  user_ruquested.xxx.com
-    
-    $domain_disable = apcu_fetch( strtolower( $_SERVER["SERVER_NAME"] ) );  
+
+    $domain_disable = apcu_fetch( strtolower( $_SERVER["SERVER_NAME"] ) );
     if( $domain_disable == 1 ){
-        $url = "http://origi-" . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI']; 
+        $url = "http://origi-" . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'];
         header('Access-Control-Allow-Origin: *');
         header("Location: $url", true, 302);
         return;
     }
+    $wildcard_flag = ( substr($_SERVER["SERVER_NAME"], 0, 1) == '*' );
+
 } catch (Exception $e) {
 
 }
 
 
-
-// Binary search function
+ // Binary search function
 function binarySearch($data, $ip) {
     $low = 0;
     $high = count($data) - 1;
 
     while ($low <= $high) {
         $mid = (int)(($low + $high) / 2);
-        
+
         if ($ip < $data[$mid]['start']) {
             $high = $mid - 1;
         } elseif ($ip > $data[$mid]['end']) {
             $low = $mid + 1;
         } else {
-            return $data[$mid]['isBlocked']; // Return the block status directly
+            return [
+                'blockStatus' => $data[$mid]['isBlocked'],
+                'countryCode' => ($data[$mid]['countryCode'] === null || $data[$mid]['countryCode'] === "") ? "xx" : $data[$mid]['countryCode']
+            ];
         }
     }
-    
-    return 2; // Not found, meaning not blocked
+
+    return [
+        'blockStatus' => 2, // Not found, meaning not blocked
+        'countryCode' => "xx" // No country code for unmatched IP
+    ];
 }
+
 
 
 // Check the block status using binary search
 try {
     if ($block_data) {
-        $block_value = binarySearch($block_data, $hash);
+        $searchResult = binarySearch($block_data, $hash);
+        $block_value = $searchResult['blockStatus'];
+        $country_code = $searchResult['countryCode'];
     }
 } catch (Exception $e) {
     // Handle the exception here
     error_log("Error in binary search: " . $e->getMessage());
     $block_value = 0; // Set a default value in case of error
+    $country_code = "xx";
 }
 
 
@@ -127,14 +139,13 @@ try {
 if ($block_value == 1) { // block
     $url = "http://block-" . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'];
 } else if ($block_value == 0) { // not blocked
-    $url = "http://front-" . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'];
+    if( $wildcard_flag ){
+        // Country specific redirection based on Wildcard
+        $url = "http://front-".$country_code."-". $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'];
+    } else {
+        $url = "http://front-" . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'];
+    }
 } else {
     $url = "http://origi-" . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'];
 }
 
-
-// Redirect to the appropriate URL
-// echo $block_value
-header('Access-Control-Allow-Origin: *'); 
-header("Location: $url", true, 302);
-?>
