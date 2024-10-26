@@ -155,5 +155,7 @@ if ($block_value == 1) { // block
 // Redirect to the appropriate URL
 // echo $block_value
 header('Access-Control-Allow-Origin: *'); 
+if( isset( $_SERVER['SERVER_ADDR'] ) )
+header('special_header: '.$_SERVER['SERVER_ADDR']); 
 header("Location: $url", true, 302);
 ?>
