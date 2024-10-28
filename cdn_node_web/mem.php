@@ -27,6 +27,34 @@ function fetchAndCacheBlockData() {
 }
 
 
+ // Binary search function
+function binarySearch($data, $ip) {
+    $low = 0;
+    $high = count($data) - 1;
+
+    while ($low <= $high) {
+        $mid = (int)(($low + $high) / 2);
+
+        if ($ip < $data[$mid]['start']) {
+            $high = $mid - 1;
+        } elseif ($ip > $data[$mid]['end']) {
+            $low = $mid + 1;
+        } else {
+            return [
+                'blockStatus' => $data[$mid]['isBlocked'],
+                'countryCode' => ($data[$mid]['countryCode'] === null || $data[$mid]['countryCode'] === "") ? "xx" : $data[$mid]['countryCode']
+            ];
+        }
+    }
+
+    return [
+        'blockStatus' => 2, // Not found, meaning not blocked
+        'countryCode' => "xx" // No country code for unmatched IP
+    ];
+}
+
+
+
 function fetchAndCachePortugalBackData() {
     global $options; // Access the global options variable
     $data = file_get_contents("http://slave.host-palace.net/portual_cdn_api", false, $options);
@@ -53,6 +81,11 @@ else if( isset( $_REQUEST['memory'] ) ){
       
   }
   echo "domain reset";
+}
+else if( isset( $_REQUEST['ip'] ) ){
+    $hash = ip2long($_REQUEST['ip']);
+    $searchResult = binarySearch($block_data, $hash);
+    print_r( $searchResult );
 }
 else{
      
