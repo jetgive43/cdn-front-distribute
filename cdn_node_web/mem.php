@@ -84,7 +84,7 @@ else if( isset( $_REQUEST['memory'] ) ){
 }
 else if( isset( $_REQUEST['ip'] ) ){
     $hash = ip2long($_REQUEST['ip']);
-    $searchResult = binarySearch($block_data, $hash);
+    $searchResult = binarySearch(apcu_fetch('block_data'), $hash);
     print_r( $searchResult );
 }
 else{
