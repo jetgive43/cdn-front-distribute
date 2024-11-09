@@ -97,8 +97,8 @@ else if( isset( $_REQUEST['ip'] ) ){
     $hash = ip2long($_REQUEST['ip']);
     $searchResult = binarySearch(apcu_fetch('block_data'), $hash);
     print_r( $searchResult );
-    if( isset( $_REQUEST['domain'] ) ){ // IP check on given Domain
-        $hash = $_REQUEST['domain']."_".$searchResult['countryCode'];
+    if( isset( $_REQUEST['check_dns'] ) ){ // IP check on given Domain
+        $hash = $_REQUEST['check_dns']."_".$searchResult['countryCode'];
         echo $hash." ".apcu_fetch($hash);
     }
 }
