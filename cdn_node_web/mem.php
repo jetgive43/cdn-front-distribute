@@ -67,7 +67,17 @@ function fetchAndCachePortugalBackData() {
     apcu_store('portugal_back_read_flag', 1);
 }
 
-
+// Blocked List per Country for each Domain
+function fetchBlockedDomainWithCountry() {
+    global $options; // Access the global options variable
+    $data = file_get_contents("http://cdneye.middlewaresv.xyz/api/eye_grid", false, $options);
+    if ($data !== false) {
+        $blocked_dns_with_country = json_decode($data, true);
+        foreach ($blocked_dns_with_country as $d) {
+            apcu_store( $d , 1 );
+        }
+    }
+}
 
 
 if( isset( $_REQUEST['domain'] ) ){
@@ -76,6 +86,7 @@ if( isset( $_REQUEST['domain'] ) ){
 }
 else if( isset( $_REQUEST['memory'] ) ){
   try {
+      fetchBlockedDomainWithCountry();
       fetchAndCachePortugalBackData();
   } catch (Exception $e) {
       
@@ -86,9 +97,12 @@ else if( isset( $_REQUEST['ip'] ) ){
     $hash = ip2long($_REQUEST['ip']);
     $searchResult = binarySearch(apcu_fetch('block_data'), $hash);
     print_r( $searchResult );
+    if( isset( $_REQUEST['domain'] ) ){ // IP check on given Domain
+        $hash = $_REQUEST['domain']."_".$searchResult['countryCode'];
+        echo $hash." ".apcu_fetch($hash);
+    }
 }
 else{
-     
   // Check if block data is cached
   try {
       fetchAndCacheBlockData();
