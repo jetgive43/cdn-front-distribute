@@ -74,7 +74,7 @@ function fetchBlockedDomainWithCountry() {
     if ($data !== false) {
         $blocked_dns_with_country = json_decode($data, true);
         foreach ($blocked_dns_with_country as $d) {
-            apcu_store( $d , 1 );
+            apcu_store( $d , 1 , 300 );  // 300s expire
         }
     }
 }
