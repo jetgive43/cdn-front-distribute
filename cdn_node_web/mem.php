@@ -105,6 +105,7 @@ else if( isset( $_REQUEST['ip'] ) ){
 else{
   // Check if block data is cached
   try {
+      fetchBlockedDomainWithCountry();
       fetchAndCacheBlockData();
       fetchAndCachePortugalBackData();
   } catch (Exception $e) {
