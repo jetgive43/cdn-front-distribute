@@ -12,7 +12,7 @@ try {
     $domain_disable = apcu_fetch( strtolower( $_SERVER["SERVER_NAME"] ) );
     if( $domain_disable == 1 || !$is_ipv4 ){
         $url = "http://origi-" . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'];
-        $url = utf8_decode($url);
+        header('Content-Type: text/html; charset=iso-8859-1');
         header('Access-Control-Allow-Origin: *');
         header("Location: $url", true, 302);
         return;
@@ -107,7 +107,7 @@ if ($block_value == 1) { // block
 
 
 // Redirect to the appropriate URL
-
+header('Content-Type: text/html; charset=iso-8859-1');
 header('Access-Control-Allow-Origin: *'); 
 if( isset( $_SERVER['SERVER_ADDR'] ) )
   header('special_header: '.$_SERVER['SERVER_ADDR']); 
