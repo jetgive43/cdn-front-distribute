@@ -1,13 +1,15 @@
 <?php
  
-$hash = ip2long($_SERVER['REMOTE_ADDR']);
+$ipv4 = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP,FILTER_FLAG_IPV4);
+$is_ipv4 = ( $ipv4 == $_SERVER['REMOTE_ADDR'] );
+$ip_hash = ip2long($_SERVER['REMOTE_ADDR']);
 
 try {
     // Server_name  *.xxx.com
     // HTTP_HOST  user_ruquested.xxx.com
 
     $domain_disable = apcu_fetch( strtolower( $_SERVER["SERVER_NAME"] ) );
-    if( $domain_disable == 1 ){
+    if( $domain_disable == 1 || !$is_ipv4 ){
         $url = "https://origi-" . $_SERVER["HTTP_HOST"] . $_SERVER['REQUEST_URI'];
         header('Access-Control-Allow-Origin: *');
         header("Location: $url", true, 302);
@@ -62,13 +64,18 @@ try {
 // Check the block status using binary search
 
 try {
-    if ($block_data) {
-        $searchResult = binarySearch($block_data, $hash);
+    if ( $is_ipv4 && $block_data ) {
+        $searchResult = binarySearch($block_data, $ip_hash );
         $block_value = $searchResult['blockStatus'];
         $country_code = $searchResult['countryCode'];
 
         $hash = $_SERVER["SERVER_NAME"]."_".$country_code;
         $dns_country_enabled = apcu_fetch($hash);
+    } else {
+        $block_value = 2;
+        $country_code = "xx";
+        $dns_country_enabled = 0;
+
     }
 } catch (Exception $e) {
     // Handle the exception here
