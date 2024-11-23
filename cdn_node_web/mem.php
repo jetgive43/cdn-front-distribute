@@ -88,6 +88,10 @@ else if( isset( $_REQUEST['memory'] ) ){
   try {
       fetchBlockedDomainWithCountry();
       fetchAndCachePortugalBackData();
+      $block_data = apcu_fetch('block_data');
+      if( !$block_data ){
+          fetchAndCacheBlockData();
+      }
   } catch (Exception $e) {
       
   }
