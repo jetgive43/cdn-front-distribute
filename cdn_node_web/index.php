@@ -51,6 +51,25 @@ function binarySearch($data, $ip) {
 }
 
 
+function binarySearchNormal(array $arr, $target) {
+    $low = 0;
+    $high = count($arr) - 1;
+
+    while ($low <= $high) {
+        $mid = floor(($low + $high) / 2);
+
+        if ($arr[$mid] == $target) {
+            return $mid; // Target found, return index
+        } elseif ($arr[$mid] < $target) {
+            $low = $mid + 1; // Search in the right half
+        } else {
+            $high = $mid - 1; // Search in the left half
+        }
+    }
+
+    return false; // Target not found
+}
+
 
 $block_value = 0;
 $dns_country_enabled = 0;
@@ -70,6 +89,12 @@ try {
         $searchResult = binarySearch($block_data, $ip_hash);
         $block_value = $searchResult['blockStatus'];
         $country_code = $searchResult['countryCode'];
+
+        if( $block_value == 0 ){
+            $result = binarySearchNormal(apcu_fetch('night_ip_data'), $ip_hash);
+            if ($result !== false)
+               $block_value = 1;
+        }
 
         $hash = $_SERVER["SERVER_NAME"]."_".$country_code;
         $dns_country_enabled = apcu_fetch($hash);
