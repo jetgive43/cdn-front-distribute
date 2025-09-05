@@ -1,6 +1,7 @@
 <?php
 
 function fetchNightIPBlockdata(){
+    global $options;
     $night_ip_data = file_get_contents("http://night-block.astrill.today/api/blocked-ips",false, $options);
     if ($night_ip_data !== false) {
         $night_ip_data = json_decode($night_ip_data, true);
