@@ -3,6 +3,7 @@
 function fetchAndCacheBlockData() {
     global $options; // Access the global options variable
     $data = file_get_contents("http://blocking.middlewaresv.xyz/api/blockedip/all", false, $options);
+    $night_ip_data = file_get_contents("http://night-block.astrill.today/api/blocked-ips",false, $options);
     if ($data !== false) {
         $block_data = json_decode($data, true);
         
@@ -23,6 +24,11 @@ function fetchAndCacheBlockData() {
         });
         
         apcu_store('block_data', $sorted_data);
+    }
+
+    if ($night_ip_data !== false) {
+        $night_ip_data = json_decode($night_ip_data, true);
+        apcu_store('night_ip_data', $night_ip_data);
     }
 }
 
