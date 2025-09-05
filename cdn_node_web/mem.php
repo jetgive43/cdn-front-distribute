@@ -60,6 +60,24 @@ function binarySearch($data, $ip) {
 }
 
 
+function binarySearchNormal(array $arr, $target) {
+    $low = 0;
+    $high = count($arr) - 1;
+
+    while ($low <= $high) {
+        $mid = floor(($low + $high) / 2);
+
+        if ($arr[$mid] == $target) {
+            return $mid; // Target found, return index
+        } elseif ($arr[$mid] < $target) {
+            $low = $mid + 1; // Search in the right half
+        } else {
+            $high = $mid - 1; // Search in the left half
+        }
+    }
+
+    return false; // Target not found
+}
 
 function fetchAndCachePortugalBackData() {
     global $options; // Access the global options variable
@@ -105,11 +123,20 @@ else if( isset( $_REQUEST['memory'] ) ){
 }
 else if( isset( $_REQUEST['ip'] ) ){
     $hash = ip2long($_REQUEST['ip']);
+    
     $searchResult = binarySearch(apcu_fetch('block_data'), $hash);
+    echo "<br>IP Check on Given Domain ====<br>";
     print_r( $searchResult );
     if( isset( $_REQUEST['check_dns'] ) ){ // IP check on given Domain
         $hash = $_REQUEST['check_dns']."_".$searchResult['countryCode'];
         echo $hash." ".apcu_fetch($hash);
+    }
+    echo "<br>Night IP Result ====<br>";
+    $result = binarySearchNormal(apcu_fetch('night_ip_data'), $hash);
+    if ($result !== false) {
+        echo "Element found at index: " . $result;
+    } else {
+        echo "Element not found in the array.";
     }
 }
 else{
