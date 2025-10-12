@@ -91,7 +91,10 @@ try {
         $country_code = $searchResult['countryCode'];
 
         if( $block_value == 0 ){
-            $result = binarySearchNormal(apcu_fetch('night_ip_data'), $ip_hash);
+            $night_ip_data = apcu_fetch('night_ip_data');
+            if (!is_array($night_ip_data)) 
+                $night_ip_data = [];
+            $result = binarySearchNormal($night_ip_data, $ip_hash);
             if ($result !== false)
                $block_value = 1;
         }
