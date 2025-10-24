@@ -119,7 +119,7 @@ else if( isset( $_REQUEST['memory'] ) ){
       if( !$block_data ){
           fetchAndCacheBlockData();
       }
-      fetchNightIPBlockdata();
+      //fetchNightIPBlockdata();
   } catch (Exception $e) {
       
   }
