@@ -88,16 +88,7 @@ try {
     if ( $is_ipv4 && $block_data ) {
         $searchResult = binarySearch($block_data, $ip_hash);
         $block_value = $searchResult['blockStatus'];
-        $country_code = $searchResult['countryCode'];
-
-        if( $block_value == 0 ){
-            $night_ip_data = apcu_fetch('night_ip_data');
-            if (!is_array($night_ip_data)) 
-                $night_ip_data = [];
-            $result = binarySearchNormal($night_ip_data, $ip_hash);
-            if ($result !== false)
-               $block_value = 1;
-        }
+        $country_code = $searchResult['countryCode']; 
 
         $hash = $_SERVER["SERVER_NAME"]."_".$country_code;
         $dns_country_enabled = apcu_fetch($hash);
