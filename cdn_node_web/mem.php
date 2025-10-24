@@ -118,8 +118,7 @@ else if( isset( $_REQUEST['memory'] ) ){
       $block_data = apcu_fetch('block_data');
       if( !$block_data ){
           fetchAndCacheBlockData();
-      }
-      //fetchNightIPBlockdata();
+      } 
   } catch (Exception $e) {
       
   }
@@ -135,13 +134,7 @@ else if( isset( $_REQUEST['ip'] ) ){
         $hash = $_REQUEST['check_dns']."_".$searchResult['countryCode'];
         echo $hash." ".apcu_fetch($hash);
     }
-    echo "<br>Night IP Result ====<br>";
-    $result = binarySearchNormal(apcu_fetch('night_ip_data'), $hash);
-    if ($result !== false) {
-        echo "Element found at index: " . $result;
-    } else {
-        echo "Element not found in the array.";
-    }
+     
 }
 else{
   // Check if block data is cached
