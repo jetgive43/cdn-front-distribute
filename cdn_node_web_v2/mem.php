@@ -177,6 +177,7 @@ function fetchBlockedDomainWithCountry() {
 
 //get blackhole ips
 function getBlackholeDomains() {
+    global $options; // Access the global options variable
     $blackhole_domains = file_get_contents("https://slave.host-palace.net/stream_cdn/get_domain_by_type?dns_type=block_dns", false, $options);
     if ($blackhole_domains !== false) {
         apcu_store('blackhole_domains', $blackhole_domains); // 10 minutes
