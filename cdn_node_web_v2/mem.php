@@ -182,7 +182,6 @@ function getBlackholeDomains() {
     if ($blackhole_domains !== false) {
         apcu_store('blackhole_domains', $blackhole_domains); // 10 minutes
     }
-    echo "blackhole domains fetched! <br>";
 }
 
 
