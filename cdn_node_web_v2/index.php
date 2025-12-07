@@ -111,8 +111,11 @@ $masterDNS = explode(".", $domain["stream_dns_name"], 2)[1];
 $blackhole_domains = json_decode(apcu_fetch('blackhole_domains'), true);
 
 $use_cf_cdn = $domain["cf_cdn_list"] != null && strlen($domain["cf_cdn_list"]) > 1 && strpos($domain["cf_cdn_list"], strtoupper($country_code)) !== false;
-$cf_dns_list = json_decode(apcu_fetch(strtolower($domain["ip"])), true);
-$random_dns = $cf_dns_list[array_rand($cf_dns_list)];
+if($use_cf_cdn){
+    $cf_dns_list = json_decode(apcu_fetch(strtolower($domain["ip"])), true);
+    $random_dns = $cf_dns_list[array_rand($cf_dns_list)];
+}
+
 
 if($use_cf_cdn && $random_dns ) {
     $url = "http://" . $random_dns["record"].".".$random_dns["domain_name"] . $_SERVER['REQUEST_URI'];
