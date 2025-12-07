@@ -128,7 +128,7 @@ function binarySearchNormal(array $arr, $target) {
 function fetchAndCachePortugalBackData() {
     global $options; 
     //save the stream back data as json structure in apcu
-    $data = file_get_contents('https://dev.host-palace.net/portual_cdn_api', false, $options);
+    $data = file_get_contents('https://slave.host-palace.net/portual_cdn_api', false, $options);
     if ($data !== false) {
         $portugal_back_data = json_decode($data, true);
         foreach ($portugal_back_data as $d) {
@@ -138,7 +138,7 @@ function fetchAndCachePortugalBackData() {
     }
     apcu_store('portugal_back_read_flag', 1);
      // save the cf-cdn dns as json structure in apcu
-    $cf_data = file_get_contents('https://dev.host-palace.net/get_cf_dns_list', false, $options);
+    $cf_data = file_get_contents('https://slave.host-palace.net/get_cf_dns_list', false, $options);
     if ($cf_data !== false) {
         $cf_dns_list = json_decode($cf_data, true);
         // save the cf dns data with the backnode as key and groupby the backnode
@@ -177,7 +177,7 @@ function fetchBlockedDomainWithCountry() {
 
 //get blackhole ips
 function getBlackholeDomains() {
-    $blackhole_domains = file_get_contents("https://dev.host-palace.net/stream_cdn/get_domain_by_type?dns_type=block_dns", false, $options);
+    $blackhole_domains = file_get_contents("https://slave.host-palace.net/stream_cdn/get_domain_by_type?dns_type=block_dns", false, $options);
     if ($blackhole_domains !== false) {
         apcu_store('blackhole_domains', $blackhole_domains); // 10 minutes
     }
