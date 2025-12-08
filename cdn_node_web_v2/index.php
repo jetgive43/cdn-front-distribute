@@ -114,7 +114,6 @@ $use_cf_cdn = $domain["cf_cdn_list"] != null && strlen($domain["cf_cdn_list"]) >
 if($use_cf_cdn){
     $cf_dns_list = json_decode(apcu_fetch(strtolower($domain["ip"])), true);
     $random_dns = $cf_dns_list[array_rand($cf_dns_list)];
-    echo json_encode($cf_dns_list);
 }
 
 
