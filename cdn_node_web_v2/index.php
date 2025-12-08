@@ -124,10 +124,8 @@ if ($block_value == 1) {
 } else if ($block_value == 0 && $dns_country_enabled == 1) { // not blocked ip and and backnode is blocked from client's country
     if($use_cf_cdn && $random_dns ) {
         $url = "http://" . $random_dns["record"].".".$random_dns["domain_name"] . $_SERVER['REQUEST_URI'];        
-    }else if( $wildcard_flag ){
-        $url = "http://".$country_code."-" . $subDNS . "." . $masterDNS . $_SERVER['REQUEST_URI']; //http://xx-jwalt-1.treelive.ink/index2.php
     } else {
-        $url = "http://" . $subDNS . "." . $masterDNS . $_SERVER['REQUEST_URI'];
+        $url = "http://".$country_code."-" . $subDNS . "." . $masterDNS . $_SERVER['REQUEST_URI']; //http://xx-jwalt-1.treelive.ink/index2.php
     }
 } else {
     $url = "http://" . $domain["ip"] . $_SERVER['REQUEST_URI'];
