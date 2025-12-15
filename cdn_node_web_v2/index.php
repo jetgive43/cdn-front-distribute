@@ -113,7 +113,11 @@ $blackhole_domains = json_decode(apcu_fetch('blackhole_domains'), true);
 $use_cf_cdn = $domain["cf_cdn_list"] != null && strlen($domain["cf_cdn_list"]) > 1 && strpos($domain["cf_cdn_list"], strtoupper($country_code)) !== false;
 if($use_cf_cdn){
     $cf_dns_list = json_decode(apcu_fetch(strtolower($domain["ip"])), true);
-    $random_dns = $cf_dns_list[array_rand($cf_dns_list)];
+    if($cf_dns_list === null || count($cf_dns_list) == 0){
+        $use_cf_cdn = false;
+    } else {
+        $random_dns = $cf_dns_list[array_rand($cf_dns_list)];
+    }
 }
 
 
@@ -122,7 +126,7 @@ if($use_cf_cdn){
 if ($block_value == 1) { 
     $url = "http://block-" . ip2long($domain["ip"]) . "." . $blackhole_domains[array_rand($blackhole_domains)]["name"]. $_SERVER['REQUEST_URI'];
 } else if ($block_value == 0 && $dns_country_enabled == 1) { // not blocked ip and and backnode is blocked from client's country
-    if($use_cf_cdn && $random_dns ) {
+    if($use_cf_cdn) {
         $url = "http://" . $random_dns["record"].".".$random_dns["domain_name"] . $_SERVER['REQUEST_URI'];        
     } else {
         $url = "http://".$country_code."-" . $subDNS . "." . $masterDNS . $_SERVER['REQUEST_URI']; //http://xx-jwalt-1.treelive.ink/index2.php
