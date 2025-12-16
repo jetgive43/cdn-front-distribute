@@ -110,7 +110,7 @@ $subDNS = explode(".", $_SERVER["HTTP_HOST"], 2)[0];
 $masterDNS = explode(".", $domain["stream_dns_name"], 2)[1];
 $blackhole_domains = json_decode(apcu_fetch('blackhole_domains'), true);
 
-$use_cf_cdn = $domain["cf_cdn_list"] != null && strlen($domain["cf_cdn_list"]) > 1 && strpos($domain["cf_cdn_list"], strtoupper($country_code)) !== false;
+$use_cf_cdn = $domain && $domain["cf_cdn_list"] != null && strlen($domain["cf_cdn_list"]) > 1 && strpos($domain["cf_cdn_list"], strtoupper($country_code)) !== false;
 if($use_cf_cdn){
     $cf_dns_list = json_decode(apcu_fetch(strtolower($domain["ip"])), true);
     if($cf_dns_list === null || count($cf_dns_list) == 0){
