@@ -20,6 +20,19 @@ try {
 
 $subDNS = explode(".", $_SERVER["HTTP_HOST"], 2)[0];
 $masterDNS = explode(".", $domain["stream_dns_name"], 2)[1];
+
+
+$use_cf_cdn = array_key_exists("cf_cdn_regions", $domain) && $domain["cf_cdn_regions"] != null && strlen($domain["cf_cdn_regions"]) > 1 && strpos($domain["cf_cdn_regions"], strtoupper($country_code)) !== false;
+if($use_cf_cdn){
+    $cf_dns_list = json_decode(apcu_fetch(strtolower($domain["ip"])), true);
+    if($cf_dns_list === null || count($cf_dns_list) == 0){
+        $use_cf_cdn = false;
+    } else {
+        $random_dns = $cf_dns_list[array_rand($cf_dns_list)];
+    }
+}
+
+
 $use_stream_cdn = 1;
 $use_cf_cdn = 0;
 if($use_cf_cdn) {
