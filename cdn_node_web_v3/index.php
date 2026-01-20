@@ -1,10 +1,9 @@
 <?php
 $ipv4 = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP,FILTER_FLAG_IPV4);
 $is_ipv4 = ( $ipv4 == $_SERVER['REMOTE_ADDR'] );
-
+$country_code = $_SERVER['GEOIP_COUNTRY_CODE'] ?? "xx";
 try {
     $domain = apcu_fetch( strtolower( $_SERVER["SERVER_NAME"] ) ) ?? '';
-
     if($domain !== '') {
         $domain = json_decode($domain, true);
     }
@@ -22,7 +21,10 @@ $subDNS = explode(".", $_SERVER["HTTP_HOST"], 2)[0];
 $masterDNS = explode(".", $domain["stream_dns_name"], 2)[1];
 
 
+
+$use_stream_cdn = array_key_exists("stream_cdn_regions", $domain) && $domain["stream_cdn_regions"] != null && strlen($domain["stream_cdn_regions"]) > 1 && strpos($domain["stream_cdn_regions"], strtoupper($country_code)) !== false;
 $use_cf_cdn = array_key_exists("cf_cdn_regions", $domain) && $domain["cf_cdn_regions"] != null && strlen($domain["cf_cdn_regions"]) > 1 && strpos($domain["cf_cdn_regions"], strtoupper($country_code)) !== false;
+
 if($use_cf_cdn){
     $cf_dns_list = json_decode(apcu_fetch(strtolower($domain["ip"])), true);
     if($cf_dns_list === null || count($cf_dns_list) == 0){
@@ -32,17 +34,15 @@ if($use_cf_cdn){
     }
 }
 
-
-$use_stream_cdn = 1;
-$use_cf_cdn = 0;
 if($use_cf_cdn) {
     $url = "http://" . $random_dns["record"].".".$random_dns["domain_name"] . $_SERVER['REQUEST_URI'];        
-} else($use_stream_cdn) {
-    $url = "http://".$country_code."-" . $subDNS . "." . $masterDNS . $_SERVER['REQUEST_URI']; //http://xx-jwalt-1.treelive.ink/index2.php
+} else if($use_stream_cdn) {
+    $url = "http://".$country_code."-" . $subDNS . "." . $masterDNS . $_SERVER['REQUEST_URI']; 
 } else{
     $url = "http://" . $domain["ip"] . $_SERVER['REQUEST_URI'];
 }
-
+echo $url;
+die();
 // Redirect to the appropriate URL
 header('Content-Type: text/html; charset=UTF-8');
 header('Access-Control-Allow-Origin: *'); 
