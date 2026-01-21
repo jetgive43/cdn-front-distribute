@@ -144,7 +144,7 @@ function fetchAndCachePortugalBackData() {
         // save the cf dns data with the backnode as key and groupby the backnode
         $cf_dns_data_grouped = [];
         foreach ($cf_dns_list as $d) {
-            $cf_dns_data_grouped[$d['backnode']][] = $d;
+            $cf_dns_data_grouped[$d['backnode']][] = key_exists('domain', $d) ? $d : null;
         }
         foreach ($cf_dns_data_grouped as $backnode => $group) {
             apcu_store($backnode , json_encode($group));
