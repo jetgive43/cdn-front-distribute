@@ -5,7 +5,7 @@ function fetchAndCachePortugalBackData() {
     //save the stream back data as json structure in apcu
     $data = file_get_contents('https://slave.host-palace.net/portual_cdn_api', false, $options);
     $cf_data = file_get_contents('https://slave.host-palace.net/get_cf_dns_list', false, $options);
-    apcu_clear_cache();
+    
     if ($data !== false) {
         $portugal_back_data = json_decode($data, true);
         foreach ($portugal_back_data as $d) {
