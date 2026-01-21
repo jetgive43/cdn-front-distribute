@@ -41,8 +41,7 @@ if($use_cf_cdn) {
 } else{
     $url = "http://" . $domain["ip"] . $_SERVER['REQUEST_URI'];
 }
-echo $url;
-die();
+
 // Redirect to the appropriate URL
 header('Content-Type: text/html; charset=UTF-8');
 header('Access-Control-Allow-Origin: *'); 
