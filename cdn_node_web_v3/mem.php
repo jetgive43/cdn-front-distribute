@@ -9,6 +9,7 @@ function fetchAndCachePortugalBackData() {
     if ($data !== false) {
         $portugal_back_data = json_decode($data, true);
         foreach ($portugal_back_data as $d) {
+            apcu_delete(strtolower($d['domain']));
             apcu_store(strtolower($d['domain']) , json_encode($d));
         }
     }
@@ -19,7 +20,10 @@ function fetchAndCachePortugalBackData() {
             $cf_dns_data_grouped[$d['backnode']][] = $d;
         }
         foreach ($cf_dns_data_grouped as $backnode => $group) {
-            apcu_store($backnode , json_encode($group));
+            apcu_delete($backnode);
+            if(count($group) > 2){
+                apcu_store($backnode , json_encode($group));
+            }
         }
     }
 
