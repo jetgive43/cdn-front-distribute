@@ -41,7 +41,7 @@ if( isset( $_REQUEST['domain'] ) ){
   } catch (Exception $e) {
     echo $e->getMessage();
   }
-  echo "domain reset";
+  echo "domain reset, memory cleared";
 }
 
 ?>
