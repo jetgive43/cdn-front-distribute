@@ -18,7 +18,7 @@ function fetchAndCachePortugalBackData() {
         $cf_dns_data_grouped = [];
         foreach ($cf_dns_list as $d) {
             if(count($d) > 2){
-                $cf_dns_data_grouped[$d['backnode'][] = $d;
+                $cf_dns_data_grouped[$d['backnode']][] = $d;
             }else if(!key_exists($d['backnode'], $cf_dns_data_grouped)){
                 $cf_dns_data_grouped[$d['backnode'] = [];
             }
