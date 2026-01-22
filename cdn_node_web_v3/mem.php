@@ -17,13 +17,15 @@ function fetchAndCachePortugalBackData() {
         $cf_dns_list = json_decode($cf_data, true);
         $cf_dns_data_grouped = [];
         foreach ($cf_dns_list as $d) {
-            $cf_dns_data_grouped[$d['backnode']][] = $d;
+            if(count($d) > 2){
+                $cf_dns_data_grouped[$d['backnode'][] = $d;
+            }else if(count($cf_dns_data_grouped[$d['backnode']) == 0){
+                $cf_dns_data_grouped[$d['backnode'] = [];
+            }
         }
         foreach ($cf_dns_data_grouped as $backnode => $group) {
             apcu_delete($backnode);
-            if(count($group) > 2){
-                apcu_store($backnode , json_encode($group));
-            }
+            apcu_store($backnode , json_encode($group));
         }
     }
 
