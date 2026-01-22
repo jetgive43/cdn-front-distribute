@@ -144,9 +144,14 @@ function fetchAndCachePortugalBackData() {
         // save the cf dns data with the backnode as key and groupby the backnode
         $cf_dns_data_grouped = [];
         foreach ($cf_dns_list as $d) {
-            $cf_dns_data_grouped[$d['backnode']][] = $d;
+            if(count($d) > 2){
+                $cf_dns_data_grouped[$d['backnode'][] = $d;
+            }else if(count($cf_dns_data_grouped[$d['backnode']) == 0){
+                $cf_dns_data_grouped[$d['backnode'] = [];
+            }
         }
         foreach ($cf_dns_data_grouped as $backnode => $group) {
+            apcu_delete($backnode);
             apcu_store($backnode , json_encode($group));
         }
     }
