@@ -35,11 +35,11 @@ if($use_cf_cdn){
 }
 
 if($use_cf_cdn) {
-    $url = "http://" . $random_dns["record"].".".$random_dns["domain_name"] . $_SERVER['REQUEST_URI'];        
+    $url = "http://" . $random_dns["record"] . "." . $random_dns["domain_name"] . ":" . $random_dns["port"] . $_SERVER['REQUEST_URI'];        
 } else if($use_stream_cdn) {
-    $url = "http://".$country_code."-" . $subDNS . "." . $masterDNS . $_SERVER['REQUEST_URI']; 
+    $url = "http://".$country_code."-" . $subDNS . "." . $masterDNS . ":" . $domain["port"] . $_SERVER['REQUEST_URI']; 
 } else{
-    $url = "http://" . $domain["ip"] . $_SERVER['REQUEST_URI'];
+    $url = "http://" . $domain["ip"] . ":" . $domain["port"] . $_SERVER['REQUEST_URI'];
 }
 
 // Redirect to the appropriate URL
