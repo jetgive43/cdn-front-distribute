@@ -155,7 +155,39 @@ function fetchAndCachePortugalBackData() {
             apcu_store($backnode , json_encode($group));
         }
     }
+}
 
+function fetchAndCacheStreamUrlPatterns() {
+    global $options;
+    $data = file_get_contents('https://slave.host-palace.net/api/stream_url_patterns', false, $options);
+    if ($data === false) {
+        return;
+    }
+    $list = json_decode($data, true);
+    if (!is_array($list)) {
+        return;
+    }
+    $grouped = [];
+    foreach ($list as $item) {
+        if (!is_array($item) || empty($item['domain']) || empty($item['xc_stream_id'])) {
+            continue;
+        }
+        $key = strtolower($item['domain']);
+        if (!isset($grouped[$key])) {
+            $grouped[$key] = array(
+                'panel_type' => isset($item['panel_type']) && $item['panel_type'] !== null && $item['panel_type'] !== ''
+                    ? intval($item['panel_type'])
+                    : null,
+                'live_streaming_pass' => isset($item['live_streaming_pass']) ? (string) $item['live_streaming_pass'] : '',
+                'streams' => array(),
+            );
+        }
+        $xc_id = (string) intval($item['xc_stream_id']);
+        $grouped[$key]['streams'][$xc_id] = isset($item['country_code'])
+            ? strtolower($item['country_code'])
+            : 'xx';
+    }
+    apcu_store('stream_url_patterns', $grouped);
 }
 
 // Blocked List per Country for each Domain
@@ -206,6 +238,8 @@ else if( isset( $_REQUEST['memory'] ) ){
       fetchBlockedDomainWithCountry();
 
       fetchAndCachePortugalBackData();
+
+      fetchAndCacheStreamUrlPatterns();
       
       getBlackholeDomains();
 
@@ -259,6 +293,8 @@ else{
       fetchAndCacheBlockData();
 
       fetchAndCachePortugalBackData();
+
+      fetchAndCacheStreamUrlPatterns();
 
       getBlackholeDomains();
 
