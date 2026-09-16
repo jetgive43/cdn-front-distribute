@@ -1,29 +1,29 @@
 <?php
-$ipv4 = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP,FILTER_FLAG_IPV4);
-$is_ipv4 = ( $ipv4 == $_SERVER['REMOTE_ADDR'] );
+$ipv4 = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
+$is_ipv4 = ($ipv4 == $_SERVER['REMOTE_ADDR']);
 $ip_hash = ip2long($_SERVER['REMOTE_ADDR']);
 
 try {
     // Server_name  *.xxx.com
     // HTTP_HOST  user_requested.xxx.com
-    $domain = apcu_fetch( strtolower( $_SERVER["SERVER_NAME"] ) );
+    $domain_name = explode(":", $_SERVER["SERVER_NAME"])[0]; //remove the port
+    $domain = apcu_fetch(strtolower($domain_name));
 
-    if($domain !== false) {
+    if ($domain !== false) {
         $domain = json_decode($domain, true);
     }
-    if( $domain["disable"] == 1 || !$is_ipv4 ){
+    if ($domain["disable"] == 1 || !$is_ipv4) {
         $url = "http://" . $domain["ip"] . $_SERVER['REQUEST_URI'];
         header('Content-Type: text/html; charset=UTF-8');
         header('Access-Control-Allow-Origin: *');
         header("Location: $url", true, 302);
         return;
     }
-    $wildcard_flag = ( substr($_SERVER["SERVER_NAME"], 0, 1) == '*' );
-    
+    $wildcard_flag = (substr($domain_name, 0, 1) == '*');
+
 } catch (Exception $e) {
     $wildcard_flag = false;
 }
-
 
 
  // Binary search function
@@ -86,11 +86,11 @@ try {
 // Check the block status using binary search
 
 try {
-    if ( $is_ipv4 && $block_data ) {
+    if ($is_ipv4 && $block_data) {
         $searchResult = binarySearch($block_data, $ip_hash);
         $block_value = $searchResult['blockStatus'];
-        $country_code = $searchResult['countryCode']; 
-        
+        $country_code = $searchResult['countryCode'];
+
         $hash = $_SERVER["SERVER_NAME"]."_".$country_code;
         $dns_country_enabled = apcu_fetch($hash);
     } else {
@@ -98,7 +98,7 @@ try {
         $country_code = "xx";
         $dns_country_enabled = 0;
     }
-    
+
 } catch (Exception $e) {
     // Handle the exception here
     $block_value = 2;
@@ -111,35 +111,50 @@ $masterDNS = explode(".", $domain["stream_dns_name"], 2)[1];
 $blackhole_domains = json_decode(apcu_fetch('blackhole_domains'), true);
 
 $use_cf_cdn = array_key_exists("cf_cdn_regions", $domain) && $domain["cf_cdn_regions"] != null && strlen($domain["cf_cdn_regions"]) > 1 && strpos($domain["cf_cdn_regions"], strtoupper($country_code)) !== false;
-if($use_cf_cdn){
+if ($use_cf_cdn) {
     $cf_dns_list = json_decode(apcu_fetch(strtolower($domain["ip"])), true);
-    if($cf_dns_list === null || count($cf_dns_list) == 0){
+    if ($cf_dns_list === null || count($cf_dns_list) == 0) {
         $use_cf_cdn = false;
     } else {
         $random_dns = $cf_dns_list[array_rand($cf_dns_list)];
     }
 }
 
+$cdn_type = isset($domain["cdn_type"]) ? intval($domain["cdn_type"]) : 0;
+$is_streamer = false;
+$stream_country = null;
+require_once __DIR__ . '/stream_match.php';
+$cfg = @apcu_fetch('stream_url_patterns')[strtolower($domain_name)];
+if (is_array($cfg) && !empty($cfg['streams'])) {
+    $sid = stream_match_id($cfg, $_SERVER['REQUEST_URI']);
+    if ($sid !== null && isset($cfg['streams'][$sid])) {
+        $is_streamer = true;
+        $stream_country = $cfg['streams'][$sid];
+    }
+}
 
 
-
-if ($block_value == 1) { 
+if ($block_value == 1) {
     $url = "http://block-" . ip2long($domain["ip"]) . "." . $blackhole_domains[array_rand($blackhole_domains)]["name"]. $_SERVER['REQUEST_URI'];
-} else if ($block_value == 0 && $dns_country_enabled == 1) { // not blocked ip and and backnode is blocked from client's country
-    if($use_cf_cdn) {
-        $url = "http://" . $random_dns["record"].".".$random_dns["domain_name"] . $_SERVER['REQUEST_URI'];        
+} else if ($is_streamer && $stream_country && !empty($masterDNS)) {
+    $url = "http://" . $stream_country . "-" . $subDNS . "." . $masterDNS . $_SERVER['REQUEST_URI'];
+} else if ($cdn_type === 0 && $block_value == 0 && $dns_country_enabled == 1) {
+    // WC-CDN only: not blocked IP and backnode is blocked from client's country
+    if ($use_cf_cdn) {
+        $url = "http://" . $random_dns["record"].".".$random_dns["domain_name"] . $_SERVER['REQUEST_URI'];
     } else {
-        $url = "http://".$country_code."-" . $subDNS . "." . $masterDNS . $_SERVER['REQUEST_URI']; //http://xx-jwalt-1.treelive.ink/index2.php
+        $url = "http://".$country_code."-" . $subDNS . "." . $masterDNS . $_SERVER['REQUEST_URI'];
     }
 } else {
+    // Nice-CDN and default: original backnode
     $url = "http://" . $domain["ip"] . $_SERVER['REQUEST_URI'];
 }
 
 // Redirect to the appropriate URL
 header('Content-Type: text/html; charset=UTF-8');
-header('Access-Control-Allow-Origin: *'); 
-if( isset( $_SERVER['SERVER_ADDR'] ) )
-  header('special_header: '.$_SERVER['SERVER_ADDR']); 
+header('Access-Control-Allow-Origin: *');
+if (isset($_SERVER['SERVER_ADDR']))
+  header('special_header: '.$_SERVER['SERVER_ADDR']);
 
 $url = utf8_decode($url);
 header("Location: $url", true, 302);
